@@ -6,7 +6,7 @@ var express = require("express"),
 //APP CONFIG
 mongoose.connect("mongodb://localhost/restful_routes");
 app.set("view engine", "ejs");
-app.use(express.static(__dirname + "public"));
+app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({extended: true}));
 
 //Mongoose/Model CONFIG
