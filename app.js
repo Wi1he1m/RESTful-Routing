@@ -39,11 +39,11 @@ app.get("/", function(req, res){
 
 // INDEX ROUTE
 app.get("/blogs", function(req, res){
-    Blog.find({}, function(err, blogs){
+    Blog.find({}, function(err, blog){
        if(err){
            console.log("Danger, Will Robinson!");
        } else {
-           res.render("index", {blogs: blogs});
+           res.render("index", {blog: blog});
        }
     });
 });
@@ -67,6 +67,17 @@ app.post("/blogs", function(req, res){
     });
 });
 
+//SHOW ROUTE
+app.get("/blogs/:id", function(req, res){
+    Blog.findById(req.params.id, function(err, blog){
+        if(err){
+            console.log(err);
+        } else {
+            console.log(blog);
+            res.render("show", {blog: blog});
+        }
+    });
+});
 app.listen(process.env.PORT, process.env.IP, function(req, res){
     console.log("app is running... why don't you go catch it?");
 });
