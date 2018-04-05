@@ -2,6 +2,7 @@ var express = require("express"),
     mongoose = require("mongoose"),
     bodyParser = require("body-parser"),
     methodOverride = require("method-override"),
+    expressSanitizer = require("express-sanitizer"),
     app     = express();
 
 //APP CONFIG
@@ -9,6 +10,7 @@ mongoose.connect("mongodb://localhost/restful_routes");
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(expressSanitizer());
 app.use(methodOverride("_method"));
 
 //Mongoose/Model CONFIG
@@ -57,6 +59,9 @@ app.get("/blogs/new", function(req, res){
 
 // CREATE ROUTE
 app.post("/blogs", function(req, res){
+    //sanitize entries to prevent users running, potentially harmful, scripts
+    //later, we will be creating middleware to do this.
+    req.body.blog.body = req.sanitize(req.body.blog.body);
     //create blog
     Blog.create(req.body.blog, function(err, newPost){
         if(err){
@@ -81,7 +86,10 @@ app.get("/blogs/:id", function(req, res){
 
 // EDIT ROUTE
 app.get("/blogs/:id/edit", function(req, res){
-   Blog.findById(req.params.id, function(err, blog){
+    //sanitize entries to prevent users running, potentially harmful, scripts
+    //later, we will be creating middleware to do this.
+    req.body.blog.body = req.sanitize(req.body.blog.body);
+    Blog.findById(req.params.id, function(err, blog){
         if(err){
             res.redirect("/blogs");
         } else {
@@ -90,7 +98,7 @@ app.get("/blogs/:id/edit", function(req, res){
     });
 });
 
-// PUT ROUTE
+// UPDATE ROUTE
 app.put("/blogs/:id", function(req, res){
     Blog.findByIdAndUpdate(req.params.id, req.body.blog, function(err, blogUpdate){
         if(err){
